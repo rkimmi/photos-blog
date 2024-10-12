@@ -1,0 +1,15 @@
+{
+  "name": "photos-blog",
+  "version": "1.0.0",
+  "description": "Serves github pages for rkimmi.github.io /photos-blog.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rkimmi/photos-blog"
+  },
+  "author": "rkimmi",
+  "license": "ISC"
+}
