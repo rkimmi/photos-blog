@@ -1,7 +1,11 @@
 <script lang="ts">
-  import Counter from './lib/Counter.svelte'
+  import { Router, Route } from "svelte-routing";
+  import Home from './lib/Home.svelte';
+  import PhotoPreview from './lib/PhotoPreview.svelte';
 
-  addEventListener("DOMContentLoaded", (event) => {
+  export let url = ""; // what is this?
+
+  addEventListener("DOMContentLoaded", () => {
     const body = document.getElementsByTagName('body')[0];
     const [backgroundColor, fontColor] = getColorsForHour();
 
@@ -34,13 +38,14 @@ function getColorsForHour(): [string, string] {
 
     return [selectedBackgroundColor, selectFontColor];
 }
+
 </script>
 
 <main>
-  <div class="card">
-    wip
-    <!-- <Counter /> -->
-  </div>
+  <Router basepath="/photos-blog" {url}>
+  <Route path="/"><Home /></Route>
+  <Route path="/:id" component={PhotoPreview} />
+  </Router>
 </main>
 
 <style>
