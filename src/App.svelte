@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { Router, Route } from "svelte-routing";
   import Home from './lib/Home.svelte';
   import PhotoPreview from './lib/PhotoPreview.svelte';
 
   export let url = ""; // what is this?
+  export let photoIdParam: string | null = null;
 
   addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    photoIdParam = urlParams.get('photo');
+
     const body = document.getElementsByTagName('body')[0];
     const [backgroundColor, fontColor] = getColorsForHour();
 
@@ -42,10 +45,11 @@ function getColorsForHour(): [string, string] {
 </script>
 
 <main>
-  <Router basepath="/photos-blog" {url}>
-  <Route path="/"><Home /></Route>
-  <Route path="/:id" component={PhotoPreview} />
-  </Router>
+    {#if photoIdParam?.length}
+    <PhotoPreview id={photoIdParam}></PhotoPreview>
+    {:else}
+    <Home></Home>
+    {/if}
 </main>
 
 <style>
