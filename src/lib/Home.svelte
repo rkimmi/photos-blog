@@ -7,6 +7,6 @@
 <div>
   wip
   {#each photos as photo}
-    <a href="/photos-blog/{photo.id}">{photo.title}</a>
+    <a href="/photos-blog?photo={photo.id}">{photo.title}</a>
   {/each}
 </div>
