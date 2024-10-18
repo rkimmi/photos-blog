@@ -7,5 +7,4 @@
 <div>
   <!-- TODO append new thumbnails wrapper on scroll? -->
   <ThumbnailsWrapper pageStart={0}></ThumbnailsWrapper>
-  hello
 </div>
