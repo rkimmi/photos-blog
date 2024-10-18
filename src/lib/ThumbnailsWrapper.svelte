@@ -146,8 +146,8 @@ function isOverlapping(x1: number, y1: number, x2: number, y2: number, maxWidth:
     }
 
     .thumbnail {
-      max-width: 200px;
-      max-height: 150px;
+      max-width: 150px;
+      max-height: 125px;
     }
 
     @media (min-width: 600px) {
