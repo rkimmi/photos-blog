@@ -13,7 +13,6 @@ const MARGIN = 30;
 const dispatch = createEventDispatcher<{ pageRendered: { thumbnailCount: number } }>();
 
 onMount(async () => {
-    console.log(thumbnails)
     thumbnails = setThumbnailPositions(); 
     dispatch('pageRendered', { thumbnailCount: thumbnails.length });
 });
@@ -23,19 +22,22 @@ function isMobileView() {
     return false;
 }
 
-function getUsuablePageArea(tMaxWidth:number, tMaxHeight: number): { topStart: number, leftStart: number } {
-    let leftStart = pageWidth - tMaxWidth;
-    let topStart = pageHeight - tMaxHeight;
+function getPageStartPositions(): { topStart: number, leftStart: number } {
+    let leftStart = MARGIN;
+    let topStart = MARGIN;
+
+    if (pageNumber == 0) return { 
+        topStart, leftStart
+    }
 
     if (isMobileView()) {
         // Mobile view i.e scroll down for pages
-        topStart = topStart * pageNumber;
+        topStart += (pageNumber * pageHeight);
     } else {
         // Desktop i.e scroll right for pages
-        leftStart = leftStart * pageNumber; // - 250
+        leftStart += (pageNumber * pageWidth);
     }
 
-    console.log(topStart, leftStart)
     return { topStart, leftStart}
 }
 
@@ -46,7 +48,7 @@ function setThumbnailPositions() {
     const updatedThumbnails: Thumbnail[] = [];
 
     const { tMaxWidth, tMaxHeight } = getMaxThumbnailSizes()
-    const { topStart, leftStart } = getUsuablePageArea(tMaxWidth, tMaxHeight);
+    const { topStart, leftStart } = getPageStartPositions();
     
     thumbnails.forEach((photo) => {
         let posX: number, posY: number, isColliding: boolean;
@@ -57,7 +59,7 @@ function setThumbnailPositions() {
         let attempts = 0;
     
         do {
-            ({ posX, posY } = generateRandomPosition(leftStart, topStart));
+            ({ posX, posY } = generateRandomPosition(leftStart, topStart, tMaxHeight, tMaxWidth));
 
             isColliding = placedItems.some(
                 ({ posX: x, posY: y }) =>
@@ -81,14 +83,16 @@ function setThumbnailPositions() {
     return updatedThumbnails;
 }
 
-function generateRandomPosition(maxWidth: number, maxHeight: number) {
-    // e.g; between 0 and 500
-    // need random no between 500 and 1000
-    // e.g 3 pages with 500 height = 1500 and 2000
-    // between pageTop and pageTop + container height
+function generateRandomPosition(leftStart: number, topStart: number, tMaxHeight: number, tMaxWidth: number) {
+    let maxHeight = topStart + pageHeight - MARGIN - tMaxHeight;
+    let maxWidth = leftStart + pageWidth - MARGIN - tMaxWidth;
     return {
-        posX: Math.floor(Math.random() * maxWidth),
-        posY: Math.floor(Math.random() * maxHeight)
+        // Get random position within the x and y allowance of the page.
+        // E.g if we're on page 3 with 500px page height, topStart == 1500px
+        // Get a top position between 1500px and 2000px
+        // Math.random((max - min) + min)
+        posX: Math.floor(Math.random() * (maxWidth - leftStart) + leftStart),
+        posY: Math.floor(Math.random() * (maxHeight - topStart) + topStart)
     };
 }
 
@@ -120,8 +124,16 @@ function isOverlapping(x1: number, y1: number, x2: number, y2: number, maxWidth:
 <div>
     {#each thumbnails as thumbnail}
     <!-- href={`/photos-blog?photo=${thumbnail.id}`}  -->
-      <a id={`thumbnail-${thumbnail.id}`} href={thumbnail.url} class="thumbnail-wrapper" style="left: {thumbnail.posX}px; top: {thumbnail.posY}px;">
-        <img class="thumbnail" src={thumbnail.url} alt="Thumbnail {thumbnail.id}" />
+      <a 
+        id={`thumbnail-${thumbnail.id}`} 
+        href={thumbnail.url} 
+        class="thumbnail-wrapper" 
+        style="left: {thumbnail.posX}px; top: {thumbnail.posY}px;">
+
+        <img 
+            class="thumbnail" 
+            src={thumbnail.url} 
+            alt="img {thumbnail.id}" />
       </a>
     {/each}
 </div>

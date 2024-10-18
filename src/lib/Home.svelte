@@ -3,21 +3,36 @@
   import type { Thumbnail } from '../types/thumbnails';
   import ThumbnailsWrapper from "./ThumbnailsWrapper.svelte";
 
-  let nextPageStart = 0;
-
   const pageWidth = window.innerWidth;
   const pageHeight = window.innerHeight;
+
+  let pages: { pageStart: number, thumbnails: Thumbnail[] }[] = [];
+  let nextPageStart = 0;
+
   let thumbnails: Thumbnail[] = [];
 
+  const MAX_THUMBNAILS_PER_PAGE = 5;
 
   function handlePageRendered(event: CustomEvent<{ thumbnailCount: number }>) {
     nextPageStart += event.detail.thumbnailCount;
-    console.log('next page start is ' + nextPageStart)
+    // console.log('Page rendered. Next page thumbnail idx starts at ' + nextPageStart)
+    loadNextPage();
+  }
+
+  function loadNextPage() {
+    if (nextPageStart >= thumbnails.length) return; // No more thumbnails to load
+
+    const pageThumbnails = thumbnails.slice(
+      nextPageStart,
+      nextPageStart + MAX_THUMBNAILS_PER_PAGE
+    );
+
+    pages = [...pages, { pageStart: nextPageStart, thumbnails: pageThumbnails }];
   }
 
   onMount(async () => {
     await getAllThumbnails();
-});
+  });
 
 async function getAllThumbnails(): Promise<void> {
     // const url = 'https://rkimmiblogserver.fly.dev/api/photos-blog/thumbnails'
@@ -27,6 +42,7 @@ async function getAllThumbnails(): Promise<void> {
         const response = await fetch(url);
         let resJson = await response.json()
         thumbnails = resJson.images;
+        loadNextPage();
     } catch (error) {
         console.error('Error loading thumbnails:', error);
     }
@@ -35,16 +51,24 @@ async function getAllThumbnails(): Promise<void> {
 
 <div class="photos-wrapper">
   {#if thumbnails.length}
-    <ThumbnailsWrapper on:pageRendered={handlePageRendered} {thumbnails} pageNumber={1} {pageHeight} {pageWidth}></ThumbnailsWrapper>
+    {#each pages as { thumbnails }, index}
+      <div class="page">
+        <ThumbnailsWrapper
+          on:pageRendered={handlePageRendered}
+          {thumbnails}
+          pageNumber={index}
+          {pageHeight}
+          {pageWidth}
+        />
+      </div>
+    {/each}
   {/if}
-  <!-- TODO append new thumbnails wrapper on scroll? -->
-  <!-- <div class="page">
-    <ThumbnailsWrapper {thumbnails} pageNumber={2} {pageHeight} {pageWidth}></ThumbnailsWrapper>
-  </div> -->
 </div>
 
 <style>
   .photos-wrapper {
+    min-width: 100vw;
+    min-height: 100vh;
     overflow: auto;
     height: 100%;
     width: 100%;  }
