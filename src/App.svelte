@@ -8,7 +8,7 @@
   addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     photoIdParam = urlParams.get('photo');
-    
+
     const body = document.getElementsByTagName('body')[0];
     const [backgroundColor, fontColor] = getColorsForHour();
 
@@ -18,7 +18,7 @@
 
 const hoursToColourMap: Map<number, string[]> = new Map([
     [0, ['#bd1818', 'white']], // maroon red bg, white font
-    [12, ['#F9EDCD', 'brown']], // eggshell bg, brown font
+    [12, ['#ffffaa', 'brown']], // eggshell bg, brown font
     [16, ['#18BD70', 'black']], // slime green bg, black font
     [20, ['#A7A7F3', 'white']] // light blue bg, white font
 ])

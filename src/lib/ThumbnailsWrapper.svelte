@@ -29,7 +29,6 @@ async function loadThumbnails(pageStart: number, pageEnd: number): Promise<void>
         thumbnails = resJson.images.splice(0, pageEnd);
     } catch (error) {
         console.error('Error loading thumbnails:', error);
-    } finally {
     }
 }
 
@@ -46,9 +45,12 @@ function setThumbnailPositions() {
         
         do {
             ({ posX, posY } = generateRandomPosition(containerWidth, containerHeight));
-            isColliding = placedItems.some(({ posX: x, posY: y }) =>
-            isOverlapping(posX, posY, x, y)
-            );
+            isColliding = placedItems.some(
+                ({ posX: x, posY: y }) =>
+                    isOverlapping(posX, posY, x, y)
+                );
+            // console.log(isColliding);
+
         } while (isColliding);
     
         placedItems.push({ element, posX, posY });
@@ -80,7 +82,8 @@ function isOverlapping(x1: number, y1: number, x2: number, y2: number): boolean 
 
 <div>
     {#each thumbnails as thumbnail}
-      <a id={`thumbnail-${thumbnail.id}`} class="thumbnail-wrapper" href={`/photos-blog?photo=${thumbnail.id}`} style="left: {thumbnail.posX}px; top: {thumbnail.posY}px;">
+    <!-- href={`/photos-blog?photo=${thumbnail.id}`}  -->
+      <a id={`thumbnail-${thumbnail.id}`} href={thumbnail.url} class="thumbnail-wrapper" style="left: {thumbnail.posX}px; top: {thumbnail.posY}px;">
         <img class="thumbnail" src={thumbnail.url} alt="Thumbnail {thumbnail.id}" />
       </a>
     {/each}
