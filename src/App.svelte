@@ -8,7 +8,7 @@
   addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     photoIdParam = urlParams.get('photo');
-
+    
     const body = document.getElementsByTagName('body')[0];
     const [backgroundColor, fontColor] = getColorsForHour();
 

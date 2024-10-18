@@ -1,12 +1,11 @@
 <script lang="ts">
-  // TODO get photo thumbnails
-  export let photos: any = [{id: "test", title:"test"}]; 
-  console.log('hello')
+    import ThumbnailsWrapper from "./ThumbnailsWrapper.svelte";
+
+
 </script>
 
 <div>
-  wip
-  {#each photos as photo}
-    <a href="/photos-blog?photo={photo.id}">{photo.title}</a>
-  {/each}
+  <!-- TODO append new thumbnails wrapper on scroll? -->
+  <ThumbnailsWrapper pageStart={0}></ThumbnailsWrapper>
+  hello
 </div>
