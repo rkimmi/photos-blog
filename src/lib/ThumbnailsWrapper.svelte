@@ -28,6 +28,7 @@ async function loadThumbnails(pageStart: number, pageEnd: number): Promise<void>
         let resJson = await response.json()
         // temp splice
         thumbnails = resJson.images.splice(0, pageEnd);
+        console.log('got images from cloudinary')
     } catch (error) {
         console.error('Error loading thumbnails:', error);
     }
@@ -55,9 +56,8 @@ function setThumbnailPositions() {
                     isOverlapping(posX, posY, x, y)
                 );
             attempts++
-            // console.log(isColliding);
 
-        } while (isColliding);
+        } while (isColliding && attempts < MAX_RETRIES);
     
         placedItems.push({ element, posX, posY });
 
