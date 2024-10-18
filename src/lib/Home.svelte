@@ -37,8 +37,8 @@
   });
 
   async function getAllThumbnails(): Promise<void> {
-    // const url = 'https://rkimmiblogserver.fly.dev/api/photos-blog/thumbnails'
-    const url = "http://localhost:8080/api/photos-blog/thumbnails";
+    const url = 'https://rkimmiblogserver.fly.dev/api/photos-blog/thumbnails'
+    // const url = "http://localhost:8080/api/photos-blog/thumbnails";
 
     try {
         const response = await fetch(url);
