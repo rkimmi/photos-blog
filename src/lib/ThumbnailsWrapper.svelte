@@ -1,46 +1,52 @@
 <script lang="ts">
-import { onMount } from 'svelte';
+import { onMount, createEventDispatcher } from 'svelte';
+import type { Thumbnail } from '../types/thumbnails';
 
-type Thumbnail = {id: string, url: string, posX?: number, posY?: number};
+// Props
+export let pageNumber: number;
+export let pageHeight: number;
+export let pageWidth: number;
+export let thumbnails: Thumbnail[] = [];
 
-export let pageStart: number;
-
-const MAX_THUMBNAILS = 5;
 const MARGIN = 30;
 
-let thumbnails: Thumbnail[] = [];
+const dispatch = createEventDispatcher<{ pageRendered: { thumbnailCount: number } }>();
 
 onMount(async () => {
-    await loadThumbnails(pageStart, MAX_THUMBNAILS);
-    // Reset thumbnails
+    console.log(thumbnails)
     thumbnails = setThumbnailPositions(); 
-    console.log(thumbnails.length)
+    dispatch('pageRendered', { thumbnailCount: thumbnails.length });
 });
 
-async function loadThumbnails(pageStart: number, pageEnd: number): Promise<void> {
-    // TODO pass pagination params
-    const url = 'https://rkimmiblogserver.fly.dev/api/photos-blog/thumbnails'
-    // const url = "http://localhost:8080/api/photos-blog/thumbnails";
+function isMobileView() {
+    if (pageWidth <= 600) return true;
+    return false;
+}
 
-    try {
-        const response = await fetch(url);
-        let resJson = await response.json()
-        // temp splice
-        thumbnails = resJson.images.splice(0, pageEnd);
-        console.log('got images from cloudinary')
-    } catch (error) {
-        console.error('Error loading thumbnails:', error);
+function getUsuablePageArea(tMaxWidth:number, tMaxHeight: number): { topStart: number, leftStart: number } {
+    let leftStart = pageWidth - tMaxWidth;
+    let topStart = pageHeight - tMaxHeight;
+
+    if (isMobileView()) {
+        // Mobile view i.e scroll down for pages
+        topStart = topStart * pageNumber;
+    } else {
+        // Desktop i.e scroll right for pages
+        leftStart = leftStart * pageNumber; // - 250
     }
+
+    console.log(topStart, leftStart)
+    return { topStart, leftStart}
 }
 
 function setThumbnailPositions() {
     const MAX_RETRIES = 50;
-    const containerWidth = window.innerWidth - 250;
-    const containerHeight = window.innerHeight - 250;
+
     const placedItems: Array<{ element: HTMLElement; posX: number; posY: number }> = [];
     const updatedThumbnails: Thumbnail[] = [];
 
-    const { maxWidth, maxHeight } = getMaxThumbnailSizes()
+    const { tMaxWidth, tMaxHeight } = getMaxThumbnailSizes()
+    const { topStart, leftStart } = getUsuablePageArea(tMaxWidth, tMaxHeight);
     
     thumbnails.forEach((photo) => {
         let posX: number, posY: number, isColliding: boolean;
@@ -51,16 +57,16 @@ function setThumbnailPositions() {
         let attempts = 0;
     
         do {
-            ({ posX, posY } = generateRandomPosition(containerWidth, containerHeight));
+            ({ posX, posY } = generateRandomPosition(leftStart, topStart));
 
             isColliding = placedItems.some(
                 ({ posX: x, posY: y }) =>
-                    isOverlapping(posX, posY, x, y, maxWidth, maxHeight)
+                    isOverlapping(posX, posY, x, y, tMaxWidth, tMaxHeight)
                 );
             attempts++
 
         } while (isColliding && attempts < MAX_RETRIES);
-    
+
         placedItems.push({ element, posX, posY });
 
          // If we exceed retries, skip this thumbnail
@@ -71,10 +77,15 @@ function setThumbnailPositions() {
 
         updatedThumbnails.push({ ...photo, posX, posY });
     });
+
     return updatedThumbnails;
 }
 
 function generateRandomPosition(maxWidth: number, maxHeight: number) {
+    // e.g; between 0 and 500
+    // need random no between 500 and 1000
+    // e.g 3 pages with 500 height = 1500 and 2000
+    // between pageTop and pageTop + container height
     return {
         posX: Math.floor(Math.random() * maxWidth),
         posY: Math.floor(Math.random() * maxHeight)
@@ -90,19 +101,19 @@ function isOverlapping(x1: number, y1: number, x2: number, y2: number, maxWidth:
     );
   }
 
-  function getMaxThumbnailSizes(): { maxWidth: number; maxHeight: number } {
+  function getMaxThumbnailSizes(): { tMaxWidth: number; tMaxHeight: number } {
     const exampleThumbnail = document.querySelector('.thumbnail');
 
     if (!exampleThumbnail) {
-        return { maxWidth: 100, maxHeight: 100 };
+        return { tMaxWidth: 100, tMaxHeight: 100 };
     }
 
     const computedStyle = window.getComputedStyle(exampleThumbnail);
 
-    const maxWidth = parseInt(computedStyle.maxWidth) || 100;
-    const maxHeight = parseInt(computedStyle.maxHeight) || 100;
+    const tMaxWidth = parseInt(computedStyle.maxWidth) || 100;
+    const tMaxHeight = parseInt(computedStyle.maxHeight) || 100;
 
-    return { maxWidth, maxHeight };
+    return { tMaxWidth, tMaxHeight };
 }
 </script>
 
