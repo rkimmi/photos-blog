@@ -140,6 +140,7 @@ function isOverlapping(x1: number, y1: number, x2: number, y2: number, maxWidth:
 <style>
     .thumbnail-wrapper {
       position: absolute;
+      filter: drop-shadow(2px 4px 2px #00000020);
     }
 
     .thumbnail {

@@ -15,8 +15,10 @@
 
   function handlePageRendered(event: CustomEvent<{ thumbnailCount: number }>) {
     nextPageStart += event.detail.thumbnailCount;
-    // console.log('Page rendered. Next page thumbnail idx starts at ' + nextPageStart)
+    // TODO load next page on SCROLL
+    // but initially load two pages
     loadNextPage();
+    // console.log('Page rendered. Next page thumbnail idx starts at ' + nextPageStart)
   }
 
   function loadNextPage() {
@@ -34,7 +36,7 @@
     await getAllThumbnails();
   });
 
-async function getAllThumbnails(): Promise<void> {
+  async function getAllThumbnails(): Promise<void> {
     // const url = 'https://rkimmiblogserver.fly.dev/api/photos-blog/thumbnails'
     const url = "http://localhost:8080/api/photos-blog/thumbnails";
 
@@ -46,7 +48,7 @@ async function getAllThumbnails(): Promise<void> {
     } catch (error) {
         console.error('Error loading thumbnails:', error);
     }
-}
+  }
 </script>
 
 <div class="photos-wrapper">
@@ -67,9 +69,10 @@ async function getAllThumbnails(): Promise<void> {
 
 <style>
   .photos-wrapper {
-    min-width: 100vw;
-    min-height: 100vh;
-    overflow: auto;
-    height: 100%;
-    width: 100%;  }
+      min-width: 100vw;
+      min-height: 100vh;
+      overflow: auto;
+      height: 100%;
+      width: 100%;  
+    }
 </style>
