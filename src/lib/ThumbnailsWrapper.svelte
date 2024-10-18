@@ -74,6 +74,9 @@ function setThumbnailPositions() {
          // If we exceed retries, skip this thumbnail
         if (attempts >= MAX_RETRIES) {
             console.warn(`Skipping thumbnail ${photo.id} due to space constraints.`);
+            // Hacky just hide the thumbnail for now
+            // We need to keep track of these and send them to the parent for rendering on a new page
+            element.style.display = "none";
             return;
         }
 
