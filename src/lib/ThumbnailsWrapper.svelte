@@ -14,7 +14,8 @@ let thumbnails: Thumbnail[] = [];
 
 onMount(async () => {
     await loadThumbnails(pageStart, MAX_THUMBNAILS);
-    setThumbnailPositions(); 
+    // Reset thumbnails
+    thumbnails = setThumbnailPositions(); 
 });
 
 async function loadThumbnails(pageStart: number, pageEnd: number): Promise<void> {
@@ -33,30 +34,42 @@ async function loadThumbnails(pageStart: number, pageEnd: number): Promise<void>
 }
 
 function setThumbnailPositions() {
+    const MAX_RETRIES = 50;
     const containerWidth = window.innerWidth - 250;
     const containerHeight = window.innerHeight - 250;
     const placedItems: Array<{ element: HTMLElement; posX: number; posY: number }> = [];
-
-    thumbnails = thumbnails.map((photo) => {
+    const updatedThumbnails: Thumbnail[] = [];
+    
+    thumbnails.forEach((photo) => {
         let posX: number, posY: number, isColliding: boolean;
         const element = document.getElementById(`thumbnail-${photo.id}`);
 
         if (!element) throw new Error(`Cannot find elem thumbnail-${photo.id} to set randomised position.`)
         
+        let attempts = 0;
+    
         do {
             ({ posX, posY } = generateRandomPosition(containerWidth, containerHeight));
             isColliding = placedItems.some(
                 ({ posX: x, posY: y }) =>
                     isOverlapping(posX, posY, x, y)
                 );
+            attempts++
             // console.log(isColliding);
 
         } while (isColliding);
     
         placedItems.push({ element, posX, posY });
 
-        return { ...photo, posX, posY };
+         // If we exceed retries, skip this thumbnail
+        if (attempts >= MAX_RETRIES) {
+            console.warn(`Skipping thumbnail ${photo.id} due to space constraints.`);
+            return;
+        }
+
+        updatedThumbnails.push({ ...photo, posX, posY });
     });
+    return updatedThumbnails;
 }
 
 function generateRandomPosition(maxWidth: number, maxHeight: number) {

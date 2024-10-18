@@ -7,4 +7,6 @@
 <div>
   <!-- TODO append new thumbnails wrapper on scroll? -->
   <ThumbnailsWrapper pageStart={0}></ThumbnailsWrapper>
+     <!-- TODO need to determine start of next page based on thumbnal count in previous component -->
+     <!-- <ThumbnailsWrapper pageStart={?}></ThumbnailsWrapper> -->
 </div>
