@@ -6,8 +6,6 @@ type Thumbnail = {id: string, url: string, posX?: number, posY?: number};
 export let pageStart: number;
 
 const MAX_THUMBNAILS = 5;
-const MAX_THUMBNAIL_WIDTH = 250;
-const MAX_THUMBNAIL_HEIGHT = 250; 
 const MARGIN = 30;
 
 let thumbnails: Thumbnail[] = [];
@@ -16,6 +14,7 @@ onMount(async () => {
     await loadThumbnails(pageStart, MAX_THUMBNAILS);
     // Reset thumbnails
     thumbnails = setThumbnailPositions(); 
+    console.log(thumbnails.length)
 });
 
 async function loadThumbnails(pageStart: number, pageEnd: number): Promise<void> {
@@ -40,6 +39,8 @@ function setThumbnailPositions() {
     const containerHeight = window.innerHeight - 250;
     const placedItems: Array<{ element: HTMLElement; posX: number; posY: number }> = [];
     const updatedThumbnails: Thumbnail[] = [];
+
+    const { maxWidth, maxHeight } = getMaxThumbnailSizes()
     
     thumbnails.forEach((photo) => {
         let posX: number, posY: number, isColliding: boolean;
@@ -51,9 +52,10 @@ function setThumbnailPositions() {
     
         do {
             ({ posX, posY } = generateRandomPosition(containerWidth, containerHeight));
+
             isColliding = placedItems.some(
                 ({ posX: x, posY: y }) =>
-                    isOverlapping(posX, posY, x, y)
+                    isOverlapping(posX, posY, x, y, maxWidth, maxHeight)
                 );
             attempts++
 
@@ -79,18 +81,29 @@ function generateRandomPosition(maxWidth: number, maxHeight: number) {
     };
 }
 
-function isOverlapping(x1: number, y1: number, x2: number, y2: number): boolean {
-    const width = MAX_THUMBNAIL_WIDTH + MARGIN;
-    const height = MAX_THUMBNAIL_HEIGHT + MARGIN;
-
+function isOverlapping(x1: number, y1: number, x2: number, y2: number, maxWidth: number, maxHeight: number): boolean {
     return !(
-      x1 + width <= x2 ||
-      x2 + width <= x1 ||
-      y1 + height <= y2 ||
-      y2 + height <= y1 
+      x1 + (maxWidth + MARGIN) <= x2 ||
+      x2 + (maxWidth + MARGIN) <= x1 ||
+      y1 + (maxHeight + MARGIN) <= y2 ||
+      y2 + (maxHeight + MARGIN) <= y1 
     );
   }
 
+  function getMaxThumbnailSizes(): { maxWidth: number; maxHeight: number } {
+    const exampleThumbnail = document.querySelector('.thumbnail');
+
+    if (!exampleThumbnail) {
+        return { maxWidth: 100, maxHeight: 100 };
+    }
+
+    const computedStyle = window.getComputedStyle(exampleThumbnail);
+
+    const maxWidth = parseInt(computedStyle.maxWidth) || 100;
+    const maxHeight = parseInt(computedStyle.maxHeight) || 100;
+
+    return { maxWidth, maxHeight };
+}
 </script>
 
 <div>
@@ -107,7 +120,14 @@ function isOverlapping(x1: number, y1: number, x2: number, y2: number): boolean 
     }
 
     .thumbnail {
-      max-width: 250px;
-      max-height: 200px;
+      max-width: 150px;
+      max-height: 100px;
     }
+
+    @media (min-width: 600px) {
+    .thumbnail {
+        max-width: 250px;
+        max-height: 200px;
+    }
+}
 </style>
