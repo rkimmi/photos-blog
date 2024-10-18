@@ -77,7 +77,6 @@ function setThumbnailPositions() {
             // Hacky just hide the thumbnail for now
             // We need to keep track of these and send them to the parent for rendering on a new page
             element.style.display = "none";
-            return;
         }
 
         updatedThumbnails.push({ ...photo, posX, posY });
@@ -147,8 +146,8 @@ function isOverlapping(x1: number, y1: number, x2: number, y2: number, maxWidth:
     }
 
     .thumbnail {
-      max-width: 150px;
-      max-height: 100px;
+      max-width: 200px;
+      max-height: 150px;
     }
 
     @media (min-width: 600px) {
