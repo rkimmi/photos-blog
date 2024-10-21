@@ -17,10 +17,10 @@
 });
 
 const hoursToColourMap: Map<number, string[]> = new Map([
-    [0, ['#bd1818', 'white']], // maroon red bg, white font
+    [0, ['#ffc0c0', 'white']], // maroon red bg, white font #ffc0c0
     [12, ['#ffffaa', 'brown']], // eggshell bg, brown font
-    [16, ['#18BD70', 'black']], // slime green bg, black font
-    [20, ['#A7A7F3', 'white']] // light blue bg, white font
+    [16, ['#8affc8', 'black']], // mint green bg, black font
+    [20, ['#ceceff', 'white']] // light blue bg, white font
 ])
 
 function getColorsForHour(): [string, string] {
