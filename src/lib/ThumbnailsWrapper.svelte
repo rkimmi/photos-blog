@@ -1,6 +1,7 @@
 <script lang="ts">
 import { onMount, createEventDispatcher } from 'svelte';
 import type { Thumbnail } from '../types/thumbnails';
+import { isMobileView } from '../helpers/isMobileView';
 
 // Props
 export let pageNumber: number;
@@ -17,10 +18,6 @@ onMount(async () => {
     dispatch('pageRendered', { thumbnailCount: thumbnails.length });
 });
 
-function isMobileView() {
-    if (pageWidth <= 600) return true;
-    return false;
-}
 
 function getPageStartPositions(): { topStart: number, leftStart: number } {
     let leftStart = MARGIN;
@@ -30,7 +27,7 @@ function getPageStartPositions(): { topStart: number, leftStart: number } {
         topStart, leftStart
     }
 
-    if (isMobileView()) {
+    if (isMobileView(pageWidth)) {
         // Mobile view i.e scroll down for pages
         topStart += (pageNumber * pageHeight);
     } else {
