@@ -2,7 +2,6 @@
   import Home from './lib/Home.svelte';
   import PhotoPreview from './lib/PhotoPreview.svelte';
 
-  export let url = ""; // what is this?
   export let photoIdParam: string | null = null;
 
   addEventListener("DOMContentLoaded", () => {
