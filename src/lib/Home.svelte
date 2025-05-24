@@ -34,7 +34,7 @@
     if (isLoading) return;
 
     isLoading = true;
-    let pagesToLoad = 3;
+    let pagesToLoad = 2;
     let thumbnailLimit = pagesToLoad * MAX_THUMBNAILS_PER_PAGE;
 
     await getThumbnails(thumbnailLimit);
