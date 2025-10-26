@@ -19,7 +19,7 @@ function setBgColor() {
 }
 
 const bgColor = new Map([
-  ["light", "#c9ceda"],
+  ["light", "#f7ed9c"],
   ["dark", "#363d51"],
 ]);
 
