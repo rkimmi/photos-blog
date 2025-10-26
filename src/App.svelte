@@ -8,39 +8,27 @@
     const urlParams = new URLSearchParams(window.location.search);
     photoIdParam = urlParams.get('photo');
 
-    const body = document.getElementsByTagName('body')[0];
-    const [backgroundColor, fontColor] = getColorsForHour();
-
-    body.style.backgroundColor = backgroundColor;
-    body.style.color = fontColor;
+    setBgColor();
 });
 
-const hoursToColourMap: Map<number, string[]> = new Map([
-    [0, ['#ffc0c0', 'white']], // maroon red bg, white font #ffc0c0
-    [12, ['#ffffaa', 'brown']], // eggshell bg, brown font
-    [16, ['#8affc8', 'black']], // mint green bg, black font
-    [20, ['#ceceff', 'white']] // light blue bg, white font
-])
+function setBgColor() {
+  const body = document.getElementsByTagName("body")[0];
+  const backgroundColor = getBgColor();
 
-function getColorsForHour(): [string, string] {
-    let selectedBackgroundColor = '';
-    let selectFontColor = '';
-    const currentDateTime = new Date();
-    const hours = currentDateTime.getHours();
-
-    for (let [key, [backgroundColor, fontColor]] of hoursToColourMap) {
-        if (hours >= key) { 
-            selectedBackgroundColor = backgroundColor;
-            selectFontColor = fontColor
-        } 
-        else {
-            break;
-        }
-    }
-
-    return [selectedBackgroundColor, selectFontColor];
+  body.style.backgroundColor = backgroundColor;
 }
 
+const bgColor = new Map([
+  ["light", "#c9ceda"],
+  ["dark", "#363d51"],
+]);
+
+function getBgColor() {
+  let theme = localStorage.getItem("theme");
+  if (!theme) theme = "light";
+
+  return bgColor.get(theme);
+}
 </script>
 
 <main>
